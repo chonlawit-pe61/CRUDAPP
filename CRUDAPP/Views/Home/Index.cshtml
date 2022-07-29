@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    .swal-wide {
+        width: 450px !important;
+        font-size: 1.6rem !important;
+    }
+</style>
+<div>
+    <div class="form-group" style="margin-top:50px">
+        <label for="usr">Firstname:</label>
+        <input type="text" class="form-control" id="Firstname">
+    </div>
+    <div class="form-group">
+        <label for="pwd">Lastname:</label>
+        <input type="text" class="form-control" id="Lastname">
+    </div>
+    <div class="form-group">
+        <label for="pwd">Address:</label>
+        <input type="text" class="form-control" id="Address">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="postData()">Submit</button>
+    <table class="table" style="margin-top:10px">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Firstname</th>
+                <th scope="col">Lastname</th>
+                <th scope="col">Address</th>
+                <th scope="col">Update</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody id="tabeltr">
+        </tbody>
+    </table>
+    <div id="toggleitem"></div>
+</div>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" integrity="sha512-c42qTSw/wPZ3/5LBzD+Bw5f7bSF2oxou6wEb+I/lqeaKV5FDIfMvvRp772y4jcJLKuGUOpbJMdg/BTl50fJYAw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.min.css" integrity="sha512-cyIcYOviYhF0bHIhzXWJQ/7xnaBuIIOecYoPZBgJHQKFPo+TOBA+BY1EnTpmM8yKDU4ZdI3UGccNGCEUdfbBqw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    const postData = async () => {
+        const name = $('#Firstname').val()
+        const lastname = $('#Lastname').val()
+        const address = $('#Address').val()
+        obj = {
+            name, lastname, address
+        }
+        console.log(obj)
+        if (name && lastname && address != "") {
+            console.log(obj)
+            await $.ajax({
+                type: 'POST',
+                url: '/Home/Create',
+                data: obj,
+                datatype: "json",
+                success: function (res) {
+                    swal({
+                        icon: "success",
+                        title: "Good job!",
+                        text: "Insert User Sucess",
+                        timer: 900
+                    });
+                    console.log(res);
+                    getData();
+                    $('#Firstname').val("")
+                    $('#Lastname').val("")
+                    $('#Address').val("")
+                },
+                error: function () {
+                    console.log("Error Post Data Invalid");
+                }
+            });
+        } else {
+            swal({
+                title: "Invalid Input!",
+                text: "You clicked the button to retrun to input data!",
+                icon: "warning",
+
+            });
+        }
+    }
+    const getData = () => {
+        $.ajax({
+            type: 'POST',
+            url: '/Home/GetDataAll',
+            datatype: "json",
+            success: function (res) {
+                console.log(res)
+                $("td").remove();
+                res.map((item, index) => {
+                    var row = "<tr class='test'>"
+                    row += `<td>  ${index + 1}  </td>`
+                    row += "<td>" + item.name + "</td>"
+                    row += "<td>" + item.lastname + "</td>"
+                    row += "<td>" + item.address + "</td>"
+                    row += "<td>" + item.address + "</td>"
+                    row += `<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter${item.id}">Update</button></td>`
+                    row += `<td><button onclick='Del(${item.id})'class="btn btn-danger">Delete</button></td></tr>`
+                    toggle = `<div class="modal fade" id="exampleModalCenter${item.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="exampleModalLongTitle" style="font-size:20px">Edit Data ${item.id}</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="usr">Firstname:</label>
+                    <input type="text" class="form-control" id="NewFirstname">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Lastname:</label>
+                    <input type="text" class="form-control" id="NewLastname">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Address:</label>
+                    <input type="text" class="form-control" id="NewAddress">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="UpdateData(${item.id})">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>`;
+                    $('#tabeltr').append(row);
+                    $('#toggleitem').append(toggle)
+                });
+            },
+            error: function () {
+                console.log("Call Data Is Not Suceess");
+            }
+        });
+    }
+    getData();
+
+    const Del = (id) => {
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not to recover this Data!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    obj = {
+                        id
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Home/del',
+                        data: obj,
+                        datatype: "json",
+                        success: function (res) {
+                            getData();
+                            console.log(res)
+                        },
+                        error: function () {
+                            console.log("Call Data Is Not Suceess");
+                        }
+                    });
+                    swal("Poof! Your Delete Data has been deleted!", {
+                        icon: "success",
+                        timer: 800
+                    });
+                } else {
+                    swal("Your is safe Data!");
+                }
+            });
+    }
+    const UpdateData = (userid) => {
+        const id = userid;
+        const name = $('#NewFirstname').val()
+        const lastname = $('#NewLastname').val()
+        const address = $('#NewAddress').val()
+        console.log(id, name, lastname, address)
+        obj = {
+            id, name, lastname, address
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/Home/Update',
+            data: obj,
+            datatype: "json",
+            success: function (res) {
+                swal({
+                    icon: "success",
+                    title: "Updata",
+                    text: "Updata User Sucess",
+                    timer: 2000
+                });
+                console.log(res);
+                getData();
+                $('#NewFirstname').val("")
+                $('#NewLastname').val("")
+                $('#NewAddress').val("")
+                $('.modal').modal('hide')
+            },
+            error: function () {
+                console.log("Error Post Data Invalid");
+            }
+        });
+    }
+</script>
