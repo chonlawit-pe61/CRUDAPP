@@ -29,7 +29,7 @@ namespace CRUDAPP.ContextDB.EntityData
         {
             tblCURD tblCURD = new tblCURD();
             tblCURD.id = this.id;
-            var dataUser = db.tblCURDs.Find(tblCURD.id);
+            var dataUser = db.tblCURDs.Where(data => data.id == tblCURD.id).FirstOrDefault();
             if (dataUser != null) {
                 db.tblCURDs.Remove(dataUser);
                 db.SaveChanges();
@@ -40,14 +40,13 @@ namespace CRUDAPP.ContextDB.EntityData
         {
             tblCURD tblCURD = new tblCURD();
             tblCURD.id = this.id;
-            var dataUser = db.tblCURDs.Where(w => w.id == tblCURD.id).FirstOrDefault();
+            var dataUser = db.tblCURDs.Where(data => data.id == tblCURD.id).FirstOrDefault();
             if (dataUser != null)
             {
                 dataUser.id = this.id;
                 dataUser.name = this.name;
                 dataUser.lastname = this.lastname;
                 dataUser.address = this.address;
-                db.tblCURDs.Add(tblCURD);
                 db.SaveChanges();
             }
         }

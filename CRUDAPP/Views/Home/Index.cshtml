@@ -97,7 +97,6 @@
                     row += "<td>" + item.name + "</td>"
                     row += "<td>" + item.lastname + "</td>"
                     row += "<td>" + item.address + "</td>"
-                    row += "<td>" + item.address + "</td>"
                     row += `<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter${item.id}">Update</button></td>`
                     row += `<td><button onclick='Del(${item.id})'class="btn btn-danger">Delete</button></td></tr>`
                     toggle = `<div class="modal fade" id="exampleModalCenter${item.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -112,15 +111,15 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="usr">Firstname:</label>
-                    <input type="text" class="form-control" id="NewFirstname">
+                    <input type="text" class="form-control NewFirstname" id="NewFirstname${item.id}">
                 </div>
                 <div class="form-group">
                     <label for="pwd">Lastname:</label>
-                    <input type="text" class="form-control" id="NewLastname">
+                    <input type="text" class="form-control NewLastname" id="NewLastname${item.id}">
                 </div>
                 <div class="form-group">
                     <label for="pwd">Address:</label>
-                    <input type="text" class="form-control" id="NewAddress">
+                    <input type="text" class="form-control NewAddress" id="NewAddress${item.id}">
                 </div>
             </div>
             <div class="modal-footer">
@@ -176,11 +175,12 @@
                 }
             });
     }
-    const UpdateData = (userid) => {
+    const UpdateData = async (userid) => {
+        $("modal").modal("show");
         const id = userid;
-        const name = $('#NewFirstname').val()
-        const lastname = $('#NewLastname').val()
-        const address = $('#NewAddress').val()
+        const name = await $(`#NewFirstname${id}`).val()
+        const lastname = await $(`#NewLastname${id}`).val()
+        const address = await $(`#NewAddress${id}`).val()
         console.log(id, name, lastname, address)
         obj = {
             id, name, lastname, address
@@ -191,18 +191,17 @@
             data: obj,
             datatype: "json",
             success: function (res) {
+                $(`#NewFirstname${id}`).val("")
+                $(`#NewLastname${id}`).val("")
+                $(`#NewAddress${id}`).val("")
                 swal({
                     icon: "success",
                     title: "Updata",
                     text: "Updata User Sucess",
                     timer: 2000
                 });
-                console.log(res);
                 getData();
-                $('#NewFirstname').val("")
-                $('#NewLastname').val("")
-                $('#NewAddress').val("")
-                $('.modal').modal('hide')
+                $(".modal").modal("hide");
             },
             error: function () {
                 console.log("Error Post Data Invalid");
