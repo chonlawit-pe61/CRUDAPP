@@ -42,47 +42,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.min.css" integrity="sha512-cyIcYOviYhF0bHIhzXWJQ/7xnaBuIIOecYoPZBgJHQKFPo+TOBA+BY1EnTpmM8yKDU4ZdI3UGccNGCEUdfbBqw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
-    const postData = async () => {
-        const name = $('#Firstname').val()
-        const lastname = $('#Lastname').val()
-        const address = $('#Address').val()
-        obj = {
-            name, lastname, address
-        }
-        console.log(obj)
-        if (name && lastname && address != "") {
-            console.log(obj)
-            await $.ajax({
-                type: 'POST',
-                url: '/Home/Create',
-                data: obj,
-                datatype: "json",
-                success: function (res) {
-                    swal({
-                        icon: "success",
-                        title: "Good job!",
-                        text: "Insert User Sucess",
-                        timer: 900
-                    });
-                    console.log(res);
-                    getData();
-                    $('#Firstname').val("")
-                    $('#Lastname').val("")
-                    $('#Address').val("")
-                },
-                error: function () {
-                    console.log("Error Post Data Invalid");
-                }
-            });
-        } else {
-            swal({
-                title: "Invalid Input!",
-                text: "You clicked the button to retrun to input data!",
-                icon: "warning",
-            });
-        }
-    }
-    (function getData(){
+    const getData= () => {
         $.ajax({
             type: 'POST',
             url: '/Home/GetDataAll',
@@ -136,9 +96,48 @@
                 console.log("Call Data Is Not Suceess");
             }
         });
-    })();
-
-
+    };
+    getData();
+    const postData = async () => {
+        const name = $('#Firstname').val()
+        const lastname = $('#Lastname').val()
+        const address = $('#Address').val()
+        obj = {
+            name, lastname, address
+        }
+        console.log(obj)
+        if (name && lastname && address != "") {
+            console.log(obj)
+            await $.ajax({
+                type: 'POST',
+                url: '/Home/Create',
+                data: obj,
+                datatype: "json",
+                success: function (res) {
+                    swal({
+                        icon: "success",
+                        title: "Good job!",
+                        text: "Insert User Sucess",
+                        timer: 900
+                    });
+                    console.log(res);
+                    getData();
+                    $('#Firstname').val("")
+                    $('#Lastname').val("")
+                    $('#Address').val("")
+                },
+                error: function () {
+                    console.log("Error Post Data Invalid");
+                }
+            });
+        } else {
+            swal({
+                title: "Invalid Input!",
+                text: "You clicked the button to retrun to input data!",
+                icon: "warning",
+            });
+        }
+    }
     const Del = (id) => {
         swal({
             title: "Are you sure?",

@@ -12,7 +12,7 @@ namespace CRUDAPP.Controllers
 {
     public class HomeController : Controller
     {
-        CRUD_V1Entities db = new CRUD_V1Entities();
+        private readonly UserController _Controller; 
         public ActionResult Index()
         {
             return View();
@@ -37,30 +37,55 @@ namespace CRUDAPP.Controllers
         [HttpPost]
         public ActionResult GetDataAll()
         {
-            var Data = db.tblCURDs.ToList();
-            return Json(Data);
+            try
+            {
+                var DataUserAll  = _Controller.getData();
+                return Json(DataUserAll);
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
         }
         
         [HttpPost]
-        public ActionResult Create(UserEntity user)
+        public ActionResult Create()
         {
-            var fnCreate = new UserController();
-            var status = fnCreate.insert(user);
-            return Json(status);
+            try
+            {
+                _Controller.insert();
+                return Json("Insert Data is Sucess");
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
         }
 
         [HttpPost]
-        public ActionResult Del(UserEntity user)
-        { 
-            var fnDel = new UserController();
-            var status = fnDel.DelData(user);
-            return Json(status);
-        }
-        public ActionResult Update(UserEntity user)
+        public ActionResult Del()
         {
-            var fnUpdate = new UserController();
-            var status = fnUpdate.update(user);
-            return Json(status);
+            try
+            {
+                _Controller.DelDataUser();
+                return Json("Del Data is Sucess");
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
+        }
+        public ActionResult Update()
+        {
+            try
+            {
+                _Controller.UpDateDbUser();
+                return Json("Updata Data is Sucess");
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
         }
     }
 }
